@@ -1,0 +1,5 @@
+#!lispy \
+-e lispy -s
+!#
+
+(include "commands/lispy/lispy")
