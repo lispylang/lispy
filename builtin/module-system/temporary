@@ -1,7 +1,3 @@
-#!/usr/bin/kiss \
--l builtin/module-system/temporary -e kiss -s
-!#
-
 ; Copyright (C) 2022 Free Software Foundation, Inc.
 ; <https://fsf.org/>
 ;
@@ -18,4 +14,5 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-(include "commands/kiss")
+(define-syntax module
+  (identifier-syntax define-module))
