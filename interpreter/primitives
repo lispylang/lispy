@@ -1,0 +1,70 @@
+; Copyright (C) 2022 Free Software Foundation, Inc.
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty
+; of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+; General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program. If not, see <https://www.gnu.org/licenses/>. 
+
+; TODO
+; (define print print)
+
+(define apply-primitive-procedure
+  (lambda (procedure arguments)
+    (primitive-apply (primitive-implementation procedure) arguments)))
+
+(define primitive-procedure-names
+  (lambda ()
+    (map car primitive-procedures)))
+
+(define primitive-procedure-objects
+  (lambda ()
+    (map (lambda (procedure)
+           (list 'primitive
+                 (cadr procedure)))
+         primitive-procedures)))
+
+(define primitive-procedures
+  (list (list 'car car)
+        (list 'cdr cdr)
+        ; (list 'case cond)
+        (list 'list list)
+        (list 'pair pair)
+        (list 'quote? quote?)
+        (list 'append append)
+        (list 'print display)
+        (list '* *)
+        (list 'null? null?)))
+
+(define primitive-procedure?
+  (lambda (procedure)
+    (tagged-list? procedure 'primitive)))
+
+(define primitive-implementation
+  (lambda (procedure)
+    (cadr procedure)))
+
+; move this elsewhere
+(define append
+  (lambda (x y)
+    (if (null? x)
+      y
+      (cons (car x) (append (cdr x) y)))))
+
+(define make-if
+  (lambda (predicate pairequent alternative)
+    (list 'if
+          predicate
+          pairequent
+          alternative)))
+
+(define last-expression?
+  (lambda (sequence)
+    (null? (cdr sequence))))

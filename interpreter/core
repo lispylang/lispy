@@ -1,0 +1,205 @@
+; Copyright (C) 2022 Free Software Foundation, Inc.
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty
+; of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+; General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program. If not, see <https://www.gnu.org/licenses/>. 
+
+(define pair cons)
+(define print display)
+(define primitive-apply apply)
+(define-syntax case (identifier-syntax cond))
+
+(include "primitive-predicates")
+(include "environment")
+(include "evaluate")
+
+(define (apply procedure arguments env)
+  (case ((primitive-procedure? procedure)
+         (apply-primitive-procedure
+          procedure
+          (list-of-arg-values 
+           arguments 
+           env)))  ; changed
+        ((compound-procedure? procedure)
+         (evaluate-sequence
+          (procedure-body procedure)
+          (extend-environment
+           (procedure-parameters procedure)
+           (list-of-delayed-args 
+            arguments 
+            env) ; changed
+           (procedure-environment procedure))))
+        (else (error "Unknown procedure 
+                      type: APPLY" 
+                     procedure))))
+
+(define evaluate
+  (lambda (expression environment)
+    ((analyze expression) environment)))
+
+(define analyze
+  (lambda (expression)
+    (case
+      ((self-evaluating? expression)
+       (analyze-self-evaluating expression))
+      ((quote? expression)
+       (analyze-quote expression))
+      ((variable? expression)
+       (analyze-variable expression))
+      ((definition? expression)
+       (analyze-definition expression))
+      ((if? expression)
+       (analyze-if expression))
+      ((lambda? expression)
+       (analyze-lambda expression))
+      ((case? expression)
+       (analyze (cond->if expression)))
+      ((application? expression)
+       (apply (actual-value (operator expression) environment) ; evaluate
+              (operands expression) ; delay operands
+              environment)) ; pass environment here
+      (else
+       (error "Unknown expression type -- ANALYZE" expression)))))
+
+(define (list-of-arg-values expressions environment)
+  (if (no-operands? expressions)
+      '()
+      (cons (actual-value 
+             (first-operand expressions) 
+             environment)
+            (list-of-arg-values 
+             (rest-operands expressions)
+             environment))))
+
+(define (actual-value expression environment)
+  (force-it (evaluate expression environment)))
+
+(define (force-it obj)
+  (cond ((thunk? obj)
+         (let ((result
+                (actual-value 
+                 (thunk-exp obj)
+                 (thunk-env obj))))
+           (set-car! obj 'evaluated-thunk)
+           ;; replace exp with its value:
+           (set-car! (cdr obj) result) 
+           ;; forget unneeded env:
+           (set-cdr! (cdr obj) '()) 
+           result))
+        ((evaluated-thunk? obj)
+         (thunk-value obj))
+        (else obj)))
+
+(define (delay-it exp env)
+  (list 'thunk exp env))
+
+(define (thunk? obj)
+  (tagged-list? obj 'thunk))
+ 
+(define (thunk-exp thunk)
+  (cadr thunk))
+
+(define (thunk-env thunk)
+  (caddr thunk))
+
+(define (evaluated-thunk? obj)
+  (tagged-list? obj 'evaluated-thunk))
+
+(define (thunk-value evaluated-thunk) 
+  (cadr evaluated-thunk))
+
+(define analyze-self-evaluating
+  (lambda (expression)
+    (lambda (environment)
+      expression)))
+
+(define analyze-quote
+  (lambda (expression)
+    (let ((value (quote->string expression)))
+      (lambda (environment)
+        value))))
+
+(define analyze-variable
+  (lambda (expression) ; key = symbol?
+    (lambda (environment) ; environment = hashmap
+      (lookup-variable-value expression environment))))
+
+(define analyze-definition
+  (lambda (expression)
+    (let ((var (definition-variable expression))
+          (vproc (analyze (definition-value expression))))
+      (lambda (environment)
+        (define-variable! var (vproc environment) environment)
+        'ok))))
+
+(define analyze-if
+  (lambda (expression)
+    (let ((pproc (analyze (if-predicate expression)))
+          (cproc (analyze (if-consequent expression)))
+          (aproc (analyze (if-alternative expression))))
+      (lambda (environment)
+        (if (true? (pproc environment))
+            (cproc environment)
+            (aproc environment))))))
+
+(define analyze-lambda
+  (lambda (expression)
+    (let ((vars (lambda-parameters expression))
+          (bproc (analyze-sequence (lambda-body expression))))
+      (lambda (environment)
+        (make-procedure vars bproc environment)))))
+
+(define (analyze-sequence exps)
+  (define (sequentially proc1 proc2)
+    (lambda (env) (proc1 env) (proc2 env)))
+  (define (loop first-proc rest-procs)
+    (if (null? rest-procs)
+        first-proc
+        (loop (sequentially first-proc (car rest-procs))
+              (cdr rest-procs))))
+  (let ((procs (map analyze exps)))
+    (if (null? procs)
+        (error "Empty sequence -- ANALYZE"))
+    (loop (car procs) (cdr procs))))
+
+(define (analyze-application exp)
+  (let ((fproc (analyze (operator exp)))
+        (aprocs (map analyze (operands exp))))
+    (lambda (env)
+      (execute-application (fproc env)
+                           (map (lambda (aproc) (aproc env))
+                                aprocs)))))
+
+(define execute-application
+  (lambda (procedure arguments)
+    (case
+      ((primitive-procedure? procedure)
+      (apply-primitive-procedure proc args))
+      ((compound-procedure? procedure)
+      ((procedure-body procedure)
+        (extend-environment (procedure-parameters procedure)
+                            arguments
+                            (procedure-environment procedure))))
+      (else
+       (error "Unknown procedure type -- EXECUTE-APPLICATION" procedure)))))
+
+(define run-REPL
+  (lambda ()
+    (let*
+        ((port (current-input-port))
+         (expression (read port)) ; TODO(celicoo): validate this name
+         (output (actual-value expression the-global-environment))) ; TODO(celicoo): validate this name
+      (print output)
+      (newline))
+      (run-REPL)))
+
+(run-REPL)

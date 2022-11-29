@@ -1,0 +1,207 @@
+; Copyright (C) 2022 Free Software Foundation, Inc.
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty
+; of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+; General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program. If not, see <https://www.gnu.org/licenses/>. 
+
+(define lookup-variable-value
+  (lambda (variable environment) ; variable-name
+    (define environment-loop
+      (lambda (environment)
+        (define scan
+          (lambda (variables values)
+            (case
+             ((null? variables)
+              (environment-loop (enclosing-environment environment)))
+             ((eq? variable (car variables))
+              (car values))
+             (else
+              (scan (cdr variables) (cdr values))))))
+        (if (eq? environment the-empty-environment)
+            (error "Unbound variable" variable)
+            (let
+                ((frame (first-frame environment)))
+              (scan (frame-variables frame)
+                    (frame-values frame))))))
+    (environment-loop environment)))
+
+(define quote->string
+  (lambda (expression)
+    (cadr expression)))
+
+(define evaluate-definition
+  (lambda (expression environment)
+    (define-variable!
+      (definition-variable expression)
+      (evaluate (definition-value expression) environment)
+      environment)))
+
+(define evaluate-if
+  (lambda (expression environment)
+    (if (true? (evaluate (if-predicate expression) environment))
+        (evaluate (if-pairequent expression) environment)
+        (evaluate (if-alternative expression) environment))))
+
+(define (eval-if exp env)
+  (if (true? (actual-value (if-predicate exp) 
+                           env))
+      (eval (if-consequent exp) env)
+      (eval (if-alternative exp) env)))
+
+; (define make-lambda
+;   (lambda (parameters body)
+;     (pair 'lambda (pair parameters body))))
+
+(define make-procedure ; -> define lambda
+  (lambda (parameters body environment)
+    (list 'procedure parameters body environment)))
+
+(define lambda-parameters
+  (lambda (expression)
+    (cadr expression)))
+
+(define lambda-body
+  (lambda (expression)
+    (cddr expression)))
+
+(define sequence->expression
+  (lambda (sequence)
+    (case
+     ((null? sequence) sequence)
+     ((last-exp? sequence) (first-expression sequence)))))
+     ; (else
+     ; (make-begin sequence)))))
+
+; (define make-begin
+;   (lambda (sequence)
+;     (pair 'begin sequence)))
+
+(define procedure-parameters
+  (lambda (procedure)
+    (cadr procedure)))
+
+(define procedure-body
+  (lambda (procedure)
+    (caddr procedure)))
+
+(define procedure-environment
+  (lambda (procedure)
+    (cadddr procedure)))
+
+(define case-clauses
+  (lambda (expression)
+    (cdr expression)))
+
+(define case-predicate
+  (lambda (clause)
+    (car clause)))
+
+(define case-actions
+  (lambda (clause)
+    (cdr clause)))
+
+; unclear if this is needed
+(define expand-clauses
+  (lambda (clauses)
+    (if (null? clauses)
+        'false ; no else clause
+        (let ((first (car clauses))
+              (rest (cdr clauses)))
+          (if (case-else-clause? first)
+              (if (null? rest)
+                  (sequence->expression (case-actions first))
+                  (error "ELSE clause isn't last: case->IF" clauses))
+              (make-if
+               (case-predicate first)
+               (sequence->expression (case-actions first))
+               (expand-clauses rest)))))))
+
+(define case->if
+  (lambda (expression)
+    (expand-clauses (case-clauses expression))))
+
+(define definition-value
+  (lambda (expression)
+    (if (symbol? (cadr expression))
+        (caddr expression)
+        (make-lambda
+         (cdadr expression)    ; formal parameters
+         (cddr expression))))) ; body
+
+(define definition-variable
+  (lambda (expression)
+    (if (symbol? (cadr expression))
+        (cadr expression)
+        (caadr expression))))
+
+; change this name to a generic implementation
+(define first-expression
+  (lambda (sequence)
+    (car sequence)))
+; change this name to a generic implementation
+(define rest-expressions
+  (lambda (sequence)
+    (cdr sequence)))
+(define evaluate-sequence
+  (lambda (expressions environment)
+    (case
+     ((last-expression? expressions)
+      (evaluate (first-expression expressions) environment))
+     (else
+      (evaluate (first-expression expressions) environment)
+      (evaluate-sequence (rest-expressions expressions) environment)))))
+
+(define if-predicate
+  (lambda (expression)
+    (cadr expression)))
+
+(define if-pairequent
+  (lambda (expression)
+    (caddr expression)))
+
+(define if-alternative
+  (lambda (expression)
+    (if (not (null? (cdddr expression)))
+        (cadddr expression)
+        'false)))
+
+(define if-consequent
+  (lambda (expression)
+    (caddr expression)))
+
+(define first-operand
+  (lambda (operands)
+    (car operands)))
+
+(define operator
+  (lambda (expression)
+    (car expression)))
+
+(define operands
+  (lambda (expression)
+    (cdr expression)))
+
+(define no-operands?
+  (lambda (operands)
+    (null? operands)))
+
+(define rest-operands
+  (lambda (operands)
+    (cdr operands)))
+
+; list-of-values is implemented in terms of itself.
+(define list-of-values
+  (lambda (operands environment)
+    (if (no-operands? operands)
+        '()
+        (pair (evaluate (first-operand operands) environment)
+              (list-of-values (rest-operands operands) environment)))))

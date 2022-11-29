@@ -1,9 +1,4 @@
-#!/usr/bin/lispy \
--l repl/REPL -e lispy -s
-!#
-
 ; Copyright (C) 2022 Free Software Foundation, Inc.
-; <https://fsf.org/>
 ;
 ; This program is free software: you can redistribute it and/or modify
 ; it under the terms of the GNU General Public License as published by
@@ -16,6 +11,7 @@
 ; General Public License for more details.
 ;
 ; You should have received a copy of the GNU General Public License
-; along with this program. If not, see <https://www.gnu.org/licenses/>.
+; along with this program. If not, see <https://www.gnu.org/licenses/>. 
 
-(include "commands/lispy")
+; boolean is the set of boolean symbols {true,false}.
+(define boolean boolean)

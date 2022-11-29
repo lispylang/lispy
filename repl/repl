@@ -1,7 +1,3 @@
-#!/usr/bin/lispy \
--l repl/REPL -e lispy -s
-!#
-
 ; Copyright (C) 2022 Free Software Foundation, Inc.
 ; <https://fsf.org/>
 ;
@@ -18,4 +14,9 @@
 ; You should have received a copy of the GNU General Public License
 ; along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-(include "commands/lispy")
+(define REPL
+  (lambda ()
+    (loop () 
+      (print '>)
+      (print (evaluate (read)))
+      (print newline))))
