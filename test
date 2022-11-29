@@ -1,0 +1,488 @@
+; read the sicp page
+; update to data dispatch
+; change syntax
+; commit
+; add tests (iterate on this)
+
+; is this a symbol used to represent the end of the environment?
+(define the-empty-environment '())
+
+; frame -> environment-frame?
+
+(define add-binding-to-frame!
+  (lambda (variable value frame)
+    ; append
+    (set-car! frame (cons variable (car frame)))
+    (set-cdr! frame (cons value (cdr frame)))))
+
+(define first-frame
+  (lambda (environment)
+    (car environment)))
+
+(define frame-variables
+  (lambda (frame)
+    (car frame)))
+
+(define frame-values
+  (lambda (frame)
+    (cdr frame)))
+
+(define define-variable!
+  (lambda (variable value environment)
+    (letrec
+        ((frame (first-frame environment))
+         (scan (lambda (variables values)
+                 (cond
+                  ((null? variables)
+                   (add-binding-to-frame! variable value frame))
+                  ((eq? variable (car variables))
+                   (set-car! values value))
+                  (else
+                   (scan (cdr variables) (cdr values)))))))
+      (scan (frame-variables frame)
+            (frame-values frame)))))
+
+; creates a frame
+(define frame
+  (lambda (variables values)
+    (cons variables values)))
+
+; ?
+(define extend-environment
+  (lambda (variables values base-environment)
+    (if (= (length variables) (length values))
+        (cons (frame variables values) base-environment)
+        (if (< (length variables) (length values))
+            (error "Too many arguments supplied" variables values)
+            (error "Too few arguments supplied" variables values)))))
+
+; print
+(define user-print
+  (lambda (object)
+    (if (compound-procedure? object)
+        (display
+         (list 'compound-procedure
+               (procedure-parameters object)
+               (procedure-body object)
+               '<procedure-env>))
+        (display object))))
+
+(define prompt-for-input
+  (lambda (string)
+    (newline)
+    (newline)
+    (display string)
+    (newline)))
+
+(define announce-output
+  (lambda (string)
+    (newline)
+    (display string)
+    (newline)))
+
+(define apply-in-underlying-scheme
+  apply)
+
+(define apply-primitive-procedure
+  (lambda (procedure arguments)
+    (apply-in-underlying-scheme (primitive-implementation procedure) arguments)))
+
+; return list of primitive-procedure names
+; e.g
+;   (list <list-implementation>)
+;   (pair <pair-implementation>)
+;
+; (user-print (primitive-procedure-names))
+; => ('list 'pair)
+(define primitive-procedure-names
+  (lambda ()
+    ; how does this work?
+    (map car primitive-procedures)))
+
+(define primitive-procedure-objects
+  (lambda ()
+    (map (lambda (procedure)
+           (list 'primitive
+                 (cadr procedure)))
+         primitive-procedures)))
+
+(define primitive-procedures
+  (list (list 'car car)
+        (list 'cdr cdr)
+        (list 'cons cons)
+        (list 'null? null?)))
+
+(define primitive-procedure?
+  (lambda (procedure)
+    (tagged-list? procedure 'primitive)))
+
+(define primitive-implementation
+  (lambda (procedure)
+    (cadr procedure)))
+
+(define setup-environment
+  (lambda ()
+    (let
+        ((initial-environment
+          (extend-environment
+           (primitive-procedure-names)
+           (primitive-procedure-objects)
+           the-empty-environment)))
+      (define-variable! 'true #t initial-environment)
+      (define-variable! 'false #f initial-environment)
+      initial-environment)))
+
+(define the-global-environment 
+  (setup-environment))
+
+(define set-variable-value!
+  (lambda (variable value environment)
+    (define environment-loop
+      (lambda (environment)
+        (define scan
+          (lambda (variables values)
+            (cond
+             ((null? variables)
+              (environment-loop (enclosing-environment environment)))
+             ((eq? variable (car variables))
+              (set-car! values value))
+             (else
+              (scan (cdr variables) (cdr values))))))
+        (if (eq? environment the-empty-environment)
+            (error "Unbound variable: SET!" variable)
+            (let
+                ((frame (first-frame environment)))
+              (scan (frame-variables frame)
+                    (frame-values frame))))))
+    (environment-loop environment)))
+
+(define enclosing-environment
+  (lambda (environment)
+    (cdr environment)))
+
+(define make-procedure
+  (lambda (parameters body environment)
+    (list 'procedure parameters body environment)))
+
+(define compound-procedure?
+  (lambda (procedure)
+    (tagged-list? procedure 'procedure)))
+
+(define procedure-parameters
+  (lambda (procedure)
+    (cadr procedure)))
+
+(define procedure-body
+  (lambda (procedure)
+    (caddr procedure)))
+
+(define procedure-environment
+  (lambda (procedure)
+    (cadddr procedure)))
+
+(define true?
+  (lambda (x) ; what would be possible names for x?
+    (not (eq? x #f))))
+
+(define false?
+  (lambda (x)
+    (eq? x #f)))
+
+(define case?
+  (lambda (expression)
+    (tagged-list? expression 'cond)))
+
+(define cond-clauses
+  (lambda (expression)
+    (cdr expression)))
+
+(define cond-else-clause?
+  (lambda (clause)
+    (eq? (cond-predicate clause) 'else)))
+
+(define cond-predicate
+  (lambda (clause)
+    (car clause)))
+
+(define cond-actions
+  (lambda (clause)
+    (cdr clause)))
+
+(define cond->if
+  (lambda (expression)
+    (expand-clauses (cond-clauses expression))))
+
+; null? is missing
+
+(define expand-clauses
+  (lambda (clauses)
+    (if (null? clauses)
+        'false ; no else clause
+        (let ((first (car clauses))
+              (rest (cdr clauses)))
+          (if (cond-else-clause? first)
+              (if (null? rest)
+                  (sequence->expression (cond-actions first))
+                  (error "ELSE clause isn't last: COND->IF" clauses))
+              (make-if
+               (cond-predicate first)
+               (sequence->exp (cond-actions first))
+               (expand-clauses rest)))))))
+
+(define application?
+  (lambda (expression)
+    (pair? expression)))
+
+(define operator
+  (lambda (expression)
+    (car expression)))
+
+(define operands
+  (lambda (expression)
+    (cdr expression)))
+
+(define no-operands?
+  (lambda (operands)
+    (null? operands)))
+
+(define first-operand
+  (lambda (operands)
+    (car operands)))
+
+(define rest-operands
+  (lambda (operands)
+    (cdr operands)))
+
+(define sequence->exp
+  (lambda (sequence)
+    (cond
+     ((null? sequence) sequence)
+     ((last-exp? sequence) (first-expression sequence))
+     (else
+      (make-begin sequence)))))
+
+(define make-begin
+  (lambda (sequence)
+    (cons 'begin sequence)))
+
+; (define begin?
+;   (lambda (expression)
+;     (tagged-list? expression 'begin)))
+
+(define begin-actions
+  (lambda (expression)
+    (cdr expression)))
+
+(define last-expression?
+  (lambda (sequence)
+    (null? (cdr sequence))))
+
+(define first-expression
+  (lambda (sequence)
+    (car sequence)))
+
+(define rest-expressions
+  (lambda (sequence)
+    (cdr sequence)))
+
+(define make-if
+  (lambda (predicate consequent alternative)
+    (list 'if
+          predicate
+          consequent
+          alternative)))
+
+(define if?
+  (lambda (expression)
+    (tagged-list? expression 'if)))
+
+(define if-predicate
+  (lambda (expression)
+    (cadr expression)))
+
+(define if-consequent
+  (lambda (expression)
+    (caddr expression)))
+
+(define if-alternative
+  (lambda (expression)
+    (if (not (null? (cdddr expression)))
+        (cadddr expression)
+        'false)))
+
+(define make-lambda
+  (lambda (parameters body)
+    (cons 'lambda (cons parameters body))))
+
+(define lambda?
+  (lambda (expression)
+    (tagged-list? expression 'lambda)))
+
+(define lambda-parameters
+  (lambda (expression)
+    (cadr expression)))
+
+(define lambda-body
+  (lambda (expression)
+    (cddr expression)))
+
+(define definition?
+  (lambda (expression)
+    (tagged-list? expression 'define)))
+
+(define definition-variable
+  (lambda (expression)
+    (if (symbol? (cadr expression))
+        (cadr expression)
+        (caadr expression))))
+
+(define definition-value
+  (lambda (expression)
+    (if (symbol? (cadr expression))
+        (caddr expression)
+        (make-lambda
+         (cdadr expression)    ; formal parameters
+         (cddr expression))))) ; body
+
+(define tagged-list?
+  (lambda (expression tag)
+    (if (pair? expression)
+        (eq? (car expression) tag)
+        #f)))
+
+(define text-of-quotation
+  (lambda (expression)
+    (cadr expression)))
+
+(define quoted?
+  (lambda (expression)
+    (tagged-list? expression 'quote)))
+
+(define evaluate-definition
+  (lambda (expression environment)
+    (define-variable!
+      (definition-variable expression)
+      (evaluate (definition-value expression) environment)
+      environment)))
+
+(define evaluate-sequence
+  (lambda (expressions environment)
+    (cond
+     ((last-expression? expressions)
+      (evaluate (first-expression expressions) environment))
+     (else
+      (evaluate (first-expression expressions) environment)
+      (evaluate-sequence (rest-expressions expressions) environment)))))
+
+(define evaluate-if
+  (lambda (expression environment)
+    (if (true? (evaluate (if-predicate expression) environment))
+        (evaluate (if-consequent expression) environment)
+        (evaluate (if-alternative expression) environment))))
+
+(define list-of-values
+  (lambda (expressions environment)
+    (if (no-operands? expressions)
+        '()
+        (cons (evaluate (first-operand expression) environment)
+              (list-of-values (rest-operands expression) environment)))))
+
+(define apply
+  (lambda (procedure arguments)
+    (cond
+     ((primitive-procedure? procedure)
+      (apply-primitive-procedure procedure arguments))
+     ((compound-procedure? procedure)
+      (evaluate-sequence
+       (procedure-body procedure)
+       (extend-environment
+        (procedure-parameters procedure)
+        arguments
+        (procedure-environment procedure))))
+     (else
+      (error "Unknown procedure type: APPLY" procedure)))))
+
+;; evaluate
+
+(define lookup-variable-value
+  (lambda (variable environment)
+    (define environment-loop
+      (lambda (environment)
+        (define scan
+          (lambda (variables values)
+            (cond
+             ((null? variables)
+              (environment-loop (enclosing-environment environment)))
+             ((eq? variable (car variables))
+              (car values))
+             (else
+              (scan (cdr variables) (cdr values))))))
+        (if (eq? environment the-empty-environment)
+            (error "Unbound variable" variable)
+            (let
+                ((frame (first-frame environment)))
+              (scan (frame-variables frame)
+                    (frame-values frame))))))
+    (environment-loop environment)))
+
+;; symbol? is missing
+
+(define variable?
+  (lambda (expression)
+    (symbol? expression)))
+
+;; number? & string? are missing
+
+(define self-evaluating?
+  (lambda (expression)
+    (cond ; TODO(celicoo): update this to use (and)
+     ((number? expression) #t)
+     ((string? expression) #t)
+     (else #f))))
+
+(define evaluate
+  (lambda (expression environment)
+    (cond
+     ((self-evaluating? expression)
+      expression)
+     ((variable? expression)
+      (lookup-variable-value expression environment))
+     ((quoted? expression)
+      (text-of-quotation expression))
+     ((definition? expression)
+      (evaluate-definition expression environment))
+     ((if? expression)
+      (evaluate-if expression environment))
+     ((lambda? expression)
+      (make-procedure
+       (lambda-parameters expression)
+       (lambda-body expression)
+       environment))
+     ((case? expression)
+      (evaluate (cond->if expression) environment))
+     ((application? expression)
+      (apply (evaluate (operator expression) environment)
+             (list-of-values (operands expression) environment)))
+     (else
+      (error "Unknown expression type: EVAL" expression)))))
+
+(define code-string
+"
+(define (append x y)
+  (case
+   ((null? x)
+    y)
+   (else
+      (cons (car x) (append (cdr x) y)))))
+(append '(a b c) '(d e f))
+")
+
+(define run-REPL
+  (lambda ()
+    (let*
+        ((port (current-input-port))
+         (expression (read port)) ; TODO(celicoo): validate this name
+         (output (evaluate expression the-global-environment))) ; TODO(celicoo): validate this name
+      (user-print output))))
+
+(run-REPL)

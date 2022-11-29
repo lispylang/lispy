@@ -1,0 +1,483 @@
+; Copyright (C) 2022 Free Software Foundation, Inc.
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty
+; of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+; General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program. If not, see <https://www.gnu.org/licenses/>. 
+
+; ; 2. fix the include here
+; (include
+;   "system/base/target"
+
+;   ; TODO: define this.
+;   "something/match"
+; )
+
+(define architecture-name
+
+  ; (match l           ;; <- the input object
+  ; (('hello (who))  ;; <- the pattern
+  ;  who)))  
+
+    ; ('x86_64
+    ; )
+  ; )
+
+  ; '(
+  ;   (x86_64
+  ;     float             ; *flonum* when float
+  ;     double            ; *flonum* when double
+  ;     unsigned          ; *length*
+  ;     unsigned          ; *tag*
+  ;     unsigned          ; *squished*
+  ;     integer           ; *signed-squished*
+  ;     FILE              ; *file*
+  ;     jump-buffer       ; *jmpbuf*
+  ;     0                 ; *char-alignment*
+  ;     2                 ; *fixnum-alignment*
+  ;     2                 ; *flonum-alignment* when float
+  ;     2                 ; *flonum-alignment* when double
+  ;     2                 ; *pointer-alignment*
+  ;     2                 ; *length-alignment*
+  ;     2                 ; *tag-alignment*
+  ;     2                 ; *squished-alignment*
+  ;     2                 ; *file-alignment*
+  ;     2                 ; *jmpbuf-alignment*
+  ;     1                 ; *char-size*
+  ;     4                 ; *fixnum-size*
+  ;     4                 ; *flonum-size* when float
+  ;     8                 ; *flonum-size* when double
+  ;     4                 ; *pointer-size*
+  ;     4                 ; *length-size*
+  ;     4                 ; *tag-size*
+  ;     4                 ; *squished-size*
+  ;     #f                ; *include-malloc-for-alloca?*
+  ;   )
+  ;   ; TODO: needs testing.
+  ;   ;   (IA32
+  ;   ;     float             ; *flonum* when float
+  ;   ;     double            ; *flonum* when double
+  ;   ;     unsigned          ; *length*
+  ;   ;     unsigned          ; *tag*
+  ;   ;     unsigned          ; *squished*
+  ;   ;     integer           ; *signed-squished*
+  ;   ;     FILE              ; *file*
+  ;   ;     jump-buffer       ; *jmpbuf*
+  ;   ;     0                 ; *char-alignment*
+  ;   ;     2                 ; *fixnum-alignment*
+  ;   ;     2                 ; *flonum-alignment* when float
+  ;   ;     2                 ; *flonum-alignment* when double
+  ;   ;     2                 ; *pointer-alignment*
+  ;   ;     2                 ; *length-alignment*
+  ;   ;     2                 ; *tag-alignment*
+  ;   ;     2                 ; *squished-alignment*
+  ;   ;     2                 ; *file-alignment*
+  ;   ;     2                 ; *jmpbuf-alignment*
+  ;   ;     1                 ; *char-size*
+  ;   ;     4                 ; *fixnum-size*
+  ;   ;     4                 ; *flonum-size* when float
+  ;   ;     8                 ; *flonum-size* when double
+  ;   ;     4                 ; *pointer-size*
+  ;   ;     4                 ; *length-size*
+  ;   ;     4                 ; *tag-size*
+  ;   ;     4                 ; *squished-size*
+  ;   ;     #f                ; *include-malloc-for-alloca?*
+  ;   ;   )
+  ;   ;   (IA32-align-double
+  ;   ;     float             ; *flonum* when float
+  ;   ;     double            ; *flonum* when double
+  ;   ;     unsigned          ; *length*
+  ;   ;     unsigned          ; *tag*
+  ;   ;     unsigned          ; *squished*
+  ;   ;     integer           ; *signed-squished*
+  ;   ;     FILE              ; *file*
+  ;   ;     jump-buffer       ; *jmpbuf*
+  ;   ;     0                 ; *char-alignment*
+  ;   ;     2                 ; *fixnum-alignment*
+  ;   ;     2                 ; *flonum-alignment* when float
+  ;   ;     3                 ; *flonum-alignment* when double
+  ;   ;     2                 ; *pointer-alignment*
+  ;   ;     2                 ; *length-alignment*
+  ;   ;     2                 ; *tag-alignment*
+  ;   ;     2                 ; *squished-alignment*
+  ;   ;     3                 ; *file-alignment*
+  ;   ;     2                 ; *jmpbuf-alignment*
+  ;   ;     1                 ; *char-size*
+  ;   ;     4                 ; *fixnum-size*
+  ;   ;     4                 ; *flonum-size* when float
+  ;   ;     8                 ; *flonum-size* when double
+  ;   ;     4                 ; *pointer-size*
+  ;   ;     4                 ; *length-size*
+  ;   ;     4                 ; *tag-size*
+  ;   ;     4                 ; *squished-size*
+  ;   ;     #f                ; *include-malloc-for-alloca?*
+  ;   ;   )
+  ;   ;   (SPARC
+  ;   ;     float             ; *flonum* when float
+  ;   ;     double            ; *flonum* when double
+  ;   ;     unsigned          ; *length*
+  ;   ;     unsigned          ; *tag*
+  ;   ;     unsigned          ; *squished*
+  ;   ;     integer           ; *signed-squished*
+  ;   ;     FILE              ; *file*
+  ;   ;     jump-buffer       ; *jmpbuf*
+  ;   ;     0                 ; *char-alignment*
+  ;   ;     2                 ; *fixnum-alignment*
+  ;   ;     2                 ; *flonum-alignment* when float
+  ;   ;     3                 ; *flonum-alignment* when double
+  ;   ;     2                 ; *pointer-alignment*
+  ;   ;     2                 ; *length-alignment*
+  ;   ;     2                 ; *tag-alignment*
+  ;   ;     2                 ; *squished-alignment*
+  ;   ;     2                 ; *file-alignment*
+  ;   ;     2                 ; *jmpbuf-alignment*
+  ;   ;     1                 ; *char-size*
+  ;   ;     4                 ; *fixnum-size*
+  ;   ;     4                 ; *flonum-size* when float
+  ;   ;     8                 ; *flonum-size* when double
+  ;   ;     4                 ; *pointer-size*
+  ;   ;     4                 ; *length-size*
+  ;   ;     4                 ; *tag-size*
+  ;   ;     4                 ; *squished-size*
+  ;   ;     #f                ; *include-malloc-for-alloca?*
+  ;   ;   )
+  ;   ;   (SPARCv9
+  ;   ;     float             ; *flonum* when float
+  ;   ;     double            ; *flonum* when double
+  ;   ;     unsigned          ; *length*
+  ;   ;     unsigned          ; *tag*
+  ;   ;     unsigned long     ; *squished*
+  ;   ;     long              ; *signed-squished*
+  ;   ;     FILE              ; *file*
+  ;   ;     jump-buffer       ; *jmpbuf*
+  ;   ;     0                 ; *char-alignment*
+  ;   ;     2                 ; *fixnum-alignment*
+  ;   ;     2                 ; *flonum-alignment* when float
+  ;   ;     3                 ; *flonum-alignment* when double
+  ;   ;     3                 ; *pointer-alignment*
+  ;   ;     2                 ; *length-alignment*
+  ;   ;     2                 ; *tag-alignment*
+  ;   ;     3                 ; *squished-alignment*
+  ;   ;     3                 ; *file-alignment*
+  ;   ;     3                 ; *jmpbuf-alignment*
+  ;   ;     1                 ; *char-size*
+  ;   ;     4                 ; *fixnum-size*
+  ;   ;     4                 ; *flonum-size* when float
+  ;   ;     8                 ; *flonum-size* when double
+  ;   ;     8                 ; *pointer-size*
+  ;   ;     4                 ; *length-size*
+  ;   ;     4                 ; *tag-size*
+  ;   ;     8                 ; *squished-size*
+  ;   ;     #f                ; *include-malloc-for-alloca?*
+  ;   ;  )
+  ;   ;  (SPARC64
+  ;   ;     float             ; *flonum* when float
+  ;   ;     double            ; *flonum* when double
+  ;   ;     unsigned          ; *length*
+  ;   ;     unsigned          ; *tag*
+  ;   ;     unsigned          ; *squished*
+  ;   ;     integer           ; *signed-squished*
+  ;   ;     FILE              ; *file*
+  ;   ;     jump-buffer       ; *jmpbuf*
+  ;   ;     0                 ; *char-alignment*
+  ;   ;     2                 ; *fixnum-alignment*
+  ;   ;     2                 ; *flonum-alignment* when float
+  ;   ;     3                 ; *flonum-alignment* when double
+  ;   ;     2                 ; *pointer-alignment*
+  ;   ;     2                 ; *length-alignment*
+  ;   ;     2                 ; *tag-alignment*
+  ;   ;     2                 ; *squished-alignment*
+  ;   ;     3                 ; *file-alignment*
+  ;   ;     2                 ; *jmpbuf-alignment*
+  ;   ;     1                 ; *char-size*
+  ;   ;     4                 ; *fixnum-size*
+  ;   ;     4                 ; *flonum-size* when float
+  ;   ;     8                 ; *flonum-size* when double
+  ;   ;     4                 ; *pointer-size*
+  ;   ;     4                 ; *length-size*
+  ;   ;     4                 ; *tag-size*
+  ;   ;     4                 ; *squished-size*
+  ;   ;     #f                ; *include-malloc-for-alloca?*
+  ;   ;  )
+  ;   ;  (MIPS
+  ;   ;     float             ; *flonum* when float
+  ;   ;     double            ; *flonum* when double
+  ;   ;     unsigned          ; *length*
+  ;   ;     unsigned          ; *tag*
+  ;   ;     unsigned          ; *squished*
+  ;   ;     integer           ; *signed-squished*
+  ;   ;     FILE              ; *file*
+  ;   ;     jump-buffer       ; *jmpbuf*
+  ;   ;     0                 ; *char-alignment*
+  ;   ;     2                 ; *fixnum-alignment*
+  ;   ;     2                 ; *flonum-alignment* when float
+  ;   ;     ; TODO: needs confirmation if below should be 2 or 3
+  ;   ;     2                 ; *flonum-alignment* when double
+  ;   ;     2                 ; *pointer-alignment*
+  ;   ;     2                 ; *length-alignment*
+  ;   ;     2                 ; *tag-alignment*
+  ;   ;     2                 ; *squished-alignment*
+  ;   ;     2                 ; *file-alignment*
+  ;   ;     3                 ; *jmpbuf-alignment*
+  ;   ;     1                 ; *char-size*
+  ;   ;     4                 ; *fixnum-size*
+  ;   ;     4                 ; *flonum-size* when float
+  ;   ;     8                 ; *flonum-size* when double
+  ;   ;     4                 ; *pointer-size*
+  ;   ;     4                 ; *length-size*
+  ;   ;     4                 ; *tag-size*
+  ;   ;     4                 ; *squished-size*
+  ;   ;     #f                ; *include-malloc-for-alloca?*
+  ;   ;   )
+  ;   ;   (Alpha
+  ;   ;     float            ; *flonum* when float
+  ;   ;     double           ; *flonum* when double
+  ;   ;     unsigned         ; *length*
+  ;   ;     unsigned         ; *tag*
+  ;   ;     unsigned\ long   ; *squished*
+  ;   ;     long             ; *signed-squished*
+  ;   ;     FILE             ; *file*
+  ;   ;     jump-buffer      ; *jmpbuf*
+  ;   ;     0                ; *char-alignment*
+  ;   ;     2                ; *fixnum-alignment*
+  ;   ;     2                ; *flonum-alignment* when float
+  ;   ;     3                ; *flonum-alignment* when double
+  ;   ;     3                ; *pointer-alignment*
+  ;   ;     2                ; *length-alignment*
+  ;   ;     2                ; *tag-alignment*
+  ;   ;     3                ; *squished-alignment*
+  ;   ;     3                ; *file-alignment*
+  ;   ;     3                ; *jmpbuf-alignment*
+  ;   ;     1                ; *char-size*
+  ;   ;     4                ; *fixnum-size*
+  ;   ;     4                ; *flonum-size* when float
+  ;   ;     8                ; *flonum-size* when double
+  ;   ;     8                ; *pointer-size*
+  ;   ;     4                ; *length-size*
+  ;   ;     4                ; *tag-size*
+  ;   ;     8                ; *squished-size*
+  ;   ;     #f               ; *include-malloc-for-alloca?*
+  ;   ;   )
+  ;   ;   (ARM
+  ;   ;     float            ; *flonum* when float
+  ;   ;     double           ; *flonum* when double
+  ;   ;     unsigned         ; *length*
+  ;   ;     unsigned         ; *tag*
+  ;   ;     unsigned         ; *squished*
+  ;   ;     integer          ; *signed-squished*
+  ;   ;     FILE             ; *file*
+  ;   ;     jump-buffer      ; *jmpbuf*
+  ;   ;     0                ; *char-alignment*
+  ;   ;     2                ; *fixnum-alignment*
+  ;   ;     2                ; *flonum-alignment* when float
+  ;   ;     2                ; *flonum-alignment* when double
+  ;   ;     2                ; *pointer-alignment*
+  ;   ;     2                ; *length-alignment*
+  ;   ;     2                ; *tag-alignment*
+  ;   ;     2                ; *squished-alignment*
+  ;   ;     2                ; *file-alignment*
+  ;   ;     2                ; *jmpbuf-alignment*
+  ;   ;     1                ; *char-size*
+  ;   ;     4                ; *fixnum-size*
+  ;   ;     4                ; *flonum-size* when float
+  ;   ;     8                ; *flonum-size* when double
+  ;   ;     4                ; *pointer-size*
+  ;   ;     4                ; *length-size*
+  ;   ;     4                ; *tag-size*
+  ;   ;     4                ; *squished-size*
+  ;   ;     #f               ; *include-malloc-for-alloca?*
+  ;   ;   )
+  ;   ;   (M68K
+  ;   ;     float            ; *flonum* when float
+  ;   ;     double           ; *flonum* when double
+  ;   ;     unsigned         ; *length*
+  ;   ;     unsigned         ; *tag*
+  ;   ;     unsigned         ; *squished*
+  ;   ;     integer          ; *signed-squished*
+  ;   ;     FILE             ; *file*
+  ;   ;     jump-buffer      ; *jmpbuf*
+  ;   ;     0                ; *char-alignment*
+  ;   ;     2                ; *fixnum-alignment*
+  ;   ;     2                ; *flonum-alignment* when float
+  ;   ;     2                ; *flonum-alignment* when double
+  ;   ;     2                ; *pointer-alignment*
+  ;   ;     2                ; *length-alignment*
+  ;   ;     2                ; *tag-alignment*
+  ;   ;     2                ; *squished-alignment*
+  ;   ;     2                ; *file-alignment*
+  ;   ;     2                ; *jmpbuf-alignment*
+  ;   ;     1                ; *char-size*
+  ;   ;     4                ; *fixnum-size*
+  ;   ;     4                ; *flonum-size* when float
+  ;   ;     8                ; *flonum-size* when double
+  ;   ;     4                ; *pointer-size*
+  ;   ;     4                ; *length-size*
+  ;   ;     4                ; *tag-size*
+  ;   ;     4                ; *squished-size*
+  ;   ;     #f               ; *include-malloc-for-alloca?*
+  ;   ;   )
+  ;   ;   (PowerPC
+  ;   ;     float            ; *flonum* when float
+  ;   ;     double           ; *flonum* when double
+  ;   ;     unsigned         ; *length*
+  ;   ;     unsigned         ; *tag*
+  ;   ;     unsigned         ; *squished*
+  ;   ;     integer          ; *signed-squished*
+  ;   ;     FILE             ; *file*
+  ;   ;     jump-buffer      ; *jmpbuf*
+  ;   ;     0                ; *char-alignment*
+  ;   ;     2                ; *fixnum-alignment*
+  ;   ;     2                ; *flonum-alignment* when float
+  ;   ;     2                ; *flonum-alignment* when double
+  ;   ;     2                ; *pointer-alignment*
+  ;   ;     2                ; *length-alignment*
+  ;   ;     2                ; *tag-alignment*
+  ;   ;     2                ; *squished-alignment*
+  ;   ;     2                ; *file-alignment*
+  ;   ;     2                ; *jmpbuf-alignment*
+  ;   ;     1                ; *char-size*
+  ;   ;     4                ; *fixnum-size*
+  ;   ;     4                ; *flonum-size* when float
+  ;   ;     8                ; *flonum-size* when double
+  ;   ;     4                ; *pointer-size*
+  ;   ;     4                ; *length-size*
+  ;   ;     4                ; *tag-size*
+  ;   ;     4                ; *squished-size*
+  ;   ;     #f               ; *include-malloc-for-alloca?*
+  ;   ;   )
+  ;   ;   (S390
+  ;   ;     float            ; *flonum* when float
+  ;   ;     double           ; *flonum* when double
+  ;   ;     unsigned         ; *length*
+  ;   ;     unsigned         ; *tag*
+  ;   ;     unsigned         ; *squished*
+  ;   ;     integer          ; *signed-squished*
+  ;   ;     FILE             ; *file*
+  ;   ;     jump-buffer      ; *jmpbuf*
+  ;   ;     0                ; *char-alignment*
+  ;   ;     2                ; *fixnum-alignment*
+  ;   ;     2                ; *flonum-alignment* when float
+  ;   ;     3                ; *flonum-alignment* when double
+  ;   ;     2                ; *pointer-alignment*
+  ;   ;     2                ; *length-alignment*
+  ;   ;     2                ; *tag-alignment*
+  ;   ;     2                ; *squished-alignment*
+  ;   ;     3                ; *file-alignment*
+  ;   ;     2                ; *jmpbuf-alignment*
+  ;   ;     1                ; *char-size*
+  ;   ;     4                ; *fixnum-size*
+  ;   ;     4                ; *flonum-size* when float
+  ;   ;     8                ; *flonum-size* when double
+  ;   ;     4                ; *pointer-size*
+  ;   ;     4                ; *length-size*
+  ;   ;     4                ; *tag-size*
+  ;   ;     4                ; *squished-size*
+  ;   ;     #f               ; *include-malloc-for-alloca?*
+  ;   ;   )
+  ;   ;   (PowerPC64
+  ;   ;     float            ; *flonum* when float
+  ;   ;     double           ; *flonum* when double
+  ;   ;     unsigned         ; *length*
+  ;   ;     unsigned         ; *tag*
+  ;   ;     unsigned\ long   ; *squished*
+  ;   ;     long             ; *signed-squished*
+  ;   ;     FILE             ; *file*
+  ;   ;     jump-buffer      ; *jmpbuf*
+  ;   ;     0                ; *char-alignment*
+  ;   ;     2                ; *fixnum-alignment*
+  ;   ;     2                ; *flonum-alignment* when float
+  ;   ;     2                ; *flonum-alignment* when double
+  ;   ;     3                ; *pointer-alignment*
+  ;   ;     2                ; *length-alignment*
+  ;   ;     2                ; *tag-alignment*
+  ;   ;     3                ; *squished-alignment*
+  ;   ;     3                ; *file-alignment*
+  ;   ;     3                ; *jmpbuf-alignment*
+  ;   ;     1                ; *char-size*
+  ;   ;     4                ; *fixnum-size*
+  ;   ;     4                ; *flonum-size* when float
+  ;   ;     8                ; *flonum-size* when double
+  ;   ;     8                ; *pointer-size*
+  ;   ;     4                ; *length-size*
+  ;   ;     4                ; *tag-size*
+  ;   ;     8                ; *squished-size*
+  ;   ;     #t               ; *include-malloc-for-alloca?*
+  ;   ;   )
+  ; )
+)
+
+(define character
+  (if architecture-name
+    'char
+    #f
+  )
+)
+
+(define integer
+  (if architecture-name
+    'int
+    #f
+  )
+)
+
+(define float
+  (if architecture-name
+    'float
+    #f
+  )
+)
+
+(define double
+  (if architecture-name
+    'float
+    #f
+  )
+)
+
+(define )
+
+    ; (set! *flonum*
+    ; (case *flonum-representation*
+    ;  ((float) (list-ref architecture 3))
+    ;  ((double) (list-ref architecture 4))
+    ;  (else (fuck-up))))
+    ; (set! *length* (list-ref architecture 5))
+    ; (set! *tag* (list-ref architecture 6))
+    ; (set! *squished* (list-ref architecture 7))
+    ; (set! *signed-squished* (list-ref architecture 8))
+    ; (set! *file* (list-ref architecture 9))
+    ; (set! *jmpbuf* (list-ref architecture 10))
+    ; (set! *char-alignment* (list-ref architecture 11))
+    ; (set! *fixnum-alignment* (list-ref architecture 12))
+    ; (set! *flonum-alignment*
+    ; (case *flonum-representation*
+    ;  ((float) (list-ref architecture 13))
+    ;  ((double) (list-ref architecture 14))
+    ;  (else (fuck-up))))
+    ; (set! *pointer-alignment* (list-ref architecture 15))
+    ; (set! *length-alignment* (list-ref architecture 16))
+    ; (set! *tag-alignment* (list-ref architecture 17))
+    ; (set! *squished-alignment* (list-ref architecture 18))
+    ; (set! *file-alignment* (list-ref architecture 19))
+    ; (set! *jmpbuf-alignment* (list-ref architecture 20))
+    ; (set! *char-size* (list-ref architecture 21))
+    ; (set! *fixnum-size* (list-ref architecture 22))
+    ; (set! *flonum-size*
+    ; (case *flonum-representation*
+    ;  ((float) (list-ref architecture 23))
+    ;  ((double) (list-ref architecture 24))
+    ;  (else (fuck-up))))
+    ; (set! *pointer-size* (list-ref architecture 25))
+    ; (set! *length-size* (list-ref architecture 26))
+    ; (set! *tag-size* (list-ref architecture 27))
+    ; (set! *squished-size* (if *squish?* (list-ref architecture 28) 0))
+    ; (set! *include-malloc-for-alloca?* (list-ref architecture 29)))) 
+      ; TODO: continue here.

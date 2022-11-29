@@ -1,0 +1,394 @@
+; Copyright (C) 2022 Free Software Foundation, Inc.
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty
+; of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+; General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program. If not, see <https://www.gnu.org/licenses/>. 
+
+; TODO
+; (define arguments ?)
+
+; -align-strings
+; Align  all  strings  to fixnum alignment.  This will not work when strings are returned by foreign procedures that are
+; not aligned to fixnum alignment.  It will also not work when ARGV is used, since those strings are also not aligned to
+; fixnum alignment.  This is the default.
+(define *align-strings?*
+  #f
+)
+
+; -architecture
+; Specify the architecture for which to generate code.  The default is to generate code for  whatever  architecture  the
+; compiler  is  run  on.  Currently, the known architectures are IA32, IA32-align-double, SPARC, SPARCv9, SPARC64, MIPS,
+; Alpha, ARM, M68K, PowerPC, and S390.
+(define *architecture-name*
+  #f
+)
+
+; MISSING
+(define *bounds-checks?*
+  #f
+)
+
+; Specifies the C compiler to use. Defaults to gcc(1).
+(define *cc*
+  "gcc"
+)
+
+; -clone-size-limit
+; Specify the polyvariance limit, i.e. make copies of procedures that have fewer than this many expressions.  Must be  a
+; nonnegative integer.  Defaults to 80.  Specify 0 to disable polyvariance.
+(define *clone-size-limit*
+  0
+)
+
+; MISSING
+(define *closure-conversion-method*
+  #f
+)
+
+; -closure-conversion-statistics
+; Produces a summary of the closure-conversion statistics.  These are automatically processed by the program  bcl-to-la‐
+; tex.sc which is run by the bcl-benchmark script (both in the /usr/local/stalin/benchmarks directory) to produce tables
+; II, III, and IV, of the paper Flow-Directed Lightweight Closure Conversion.
+(define *closure-conversion-statistics?*
+  #f
+)
+
+; MISSING
+(define *closure-representation*
+  #f
+)
+
+; -copt
+; Specifies the options that the C compiler is to be called with.  Normally the C compiler is  called  without  any  op‐
+; tions. This option can be repeated to allow passing multiple options to the C compiler.
+(define *copts*
+  '()
+)
+
+; -dP
+; Enables copy propagation. 
+; Sometimes yields more efficient code and sometimes yields less efficient code.
+(define *copy-propagation?*
+  #f
+)
+
+; MISSING
+(define *database?*
+  #f
+)
+
+; -de
+; Enables the compiler optimization known as EQ? forgery.
+; Sometimes yields more efficient  code  and  sometimes yields less efficient code.
+(define *eq?-forgery?*
+  #f
+)
+
+; -dh
+; Disables the use of expandable regions and uses fixed-size regions instead.
+(define *expandable-regions?*
+  #f
+)
+
+; MISSING
+(define *flonum-representation*
+  #f
+)
+
+; -df
+; Disables the compiler optimization known as forgery.
+(define *forgery?*
+  #f
+)
+
+; -fully-convert-to-CPS
+; Normally,  lightweight  CPS  conversion is applied, converting only those expressions and procedures needed to support
+; escaping continuations.  When this option is specified, the program is fully converted to CPS.
+(define *fully-convert-to-CPS?*
+  #f
+)
+
+; MISSING
+(define *globals?*
+  #f
+)
+
+; MISSING
+(define *heap-allocation?*
+  #f
+)
+
+; MISSING
+(define *immediate-structures?*
+  #f
+)
+
+; -index-allocated-headed-vector-types-by-element-type
+; During flow analysis, when processing procedure-call expressions that can allocate headed vectors, generate a new ab‐
+; stract headed vector for each potential element type for that headed vector.
+(define *index-allocated-headed-vector-types-by-element-type?*
+  #f
+)
+
+; -index-allocated-headed-vector-types-by-expression
+; During  flow analysis, when processing procedure-call expressions that can allocate headed vectors, generate a new ab‐
+; stract headed vector for each such expression.  This is the default.
+(define *index-allocated-headed-vector-types-by-expression?*
+  #f
+)
+
+; -index-allocated-nonheaded-vector-types-by-element-type
+; During  flow  analysis, when processing procedure-call expressions that can allocate nonheaded vectors, generate a new
+; abstract nonheaded vector for each potential element type for that nonheaded vector.
+(define *index-allocated-nonheaded-vector-types-by-element-type?*
+  #f
+)
+
+; -index-allocated-nonheaded-vector-types-by-expression
+; During flow analysis, when processing procedure-call expressions that can allocate nonheaded vectors, generate  a  new
+; abstract nonheaded vector for each such expression.  This is the default.
+(define *index-allocated-nonheaded-vector-types-by-expression?*
+  #f
+)
+
+; -index-allocated-string-types-by-expression
+; During flow analysis, when processing procedure-call expressions that can allocate strings, generate  a  new  abstract
+; string for each such expression.  This is the default.
+(define *index-allocated-string-types-by-expression?*
+  #f
+)
+
+; -index-allocated-structure-types-by-expression
+; During flow analysis, when processing procedure-call expressions that can allocate structures, generate a new abstract
+; structure for each such expression.  This is the default.
+(define *index-allocated-structure-types-by-expression?*
+  #f
+)
+
+; -index-allocated-structure-types-by-slot-types
+; During flow analysis, when processing procedure-call expressions that can allocate structures, generate a new abstract
+; structure for each set of potential slot types for that structure.
+(define *index-allocated-structure-types-by-slot-types?*
+  #f
+)
+
+; -index-constant-headed-vector-types-by-element-type
+; During flow analysis, when processing constant expressions that contain headed vectors, generate a new abstract headed
+; vector for each potential element type for that headed vector.
+(define *index-constant-headed-vector-types-by-element-type?*
+  #f
+)
+
+; -index-constant-headed-vector-types-by-expression
+; During flow analysis, when processing constant expressions that contain headed vectors, generate a new abstract headed
+; vector for each such expression.  This is the default.
+(define *index-constant-headed-vector-types-by-expression?*
+  #f
+)
+
+; -index-constant-nonheaded-vector-types-by-element-type
+; During  flow  analysis,  when  processing constant expressions that contain nonheaded vectors, generate a new abstract
+; nonheaded vector for each potential element type for that nonheaded vector.
+(define *index-constant-nonheaded-vector-types-by-element-type?*
+  #f
+)
+
+; -index-constant-nonheaded-vector-types-by-expression
+; During  flow  analysis,  when  processing constant expressions that contain nonheaded vectors, generate a new abstract
+; nonheaded vector for each such expression.  This is the default.
+(define *index-constant-nonheaded-vector-types-by-expression?*
+  #f
+)
+
+; -index-constant-structure-types-by-expression
+; During flow analysis, when processing constant expres
+; sion that contain structures, generate a new  abstract  structure
+; for each such expression.  This is the default.
+(define *index-constant-structure-types-by-expression?*
+  #f
+)
+
+; -index-constant-structure-types-by-slot-types
+; During flow analysis, when processing constant expres
+; sions that contain structures, generate a new abstract  structure
+; for each set of potential slot types for that structu
+; re.
+(define *index-constant-structure-types-by-slot-types?*
+  #f
+)
+
+; MISSING
+(define *keep-c?*
+  #f
+)
+
+; -Om
+; Specifies that code to check for out-of-memory errors is to be suppressed.  If not specified, a run-time error will be
+; issued if sufficient memory cannot be allocated.  If specified, the behavior of programs that run out of memory is un‐
+; defined.
+(define *memory-checks?*
+  #f
+)
+
+; MISSING
+(define *memory-messages?*
+  #f
+)
+
+; -no-escaping-continuations
+; Normally, full continuations are supported.  When this option is specified, the only continuations that are  supported
+; are those that cannot be called after the procedure that created the continuation has returned.
+(define *no-escaping-continuations?*
+  #f
+)
+
+; -On
+; Specifies that code to check for exact integer overflow is to be suppressed.  If not specified, a run-time error will
+; be issued on exact integer overflow.  If specified, the behavior of programs that cause exact integer overflow is  un‐
+; defined.  Currently, Stalin does not know how to generate overflow checking code so this option must be specified.
+(define *overflow-checks?*
+  #f
+)
+
+; MISSING
+(define *p1?*
+  #f
+)
+
+; MISSING
+(define *p2?*
+  #f
+)
+
+; MISSING
+(define *p3?*
+  #f
+)
+
+; MISSING
+(define *p4?*
+  #f
+)
+ 
+; MISSING
+(define *p5?*
+  #f
+)
+
+; MISSING
+(define *p6?*
+  #f
+)
+
+; MISSING
+(define *p7?*
+  #f
+)
+
+; MISSING
+(define *promote-representations?*
+  #f
+)
+
+; -q
+; Includes the macros from the QobiScheme library.  Currently, this defines the  DEFINE-STRUCTURE  syntax,  among  other
+; things. This implies -x.
+(define *QobiScheme?*
+  #f
+)
+
+; -dH
+; Disables the use of regions for allocating data.
+(define *region-allocation?*
+  #f
+)
+
+; TODO
+(define *run-cc?*
+  #f
+)
+
+; MISSING
+(define *runtime-checks?*
+  #f
+)
+
+; -s
+; Includes the macros from the Scheme->C compatibility library.  Currently, this defines the WHEN and UNLESS syntax.
+(define *Scheme->C-compatibility?*
+  #f
+)
+
+; -split-even-if-no-widening
+; Normally,  polyvariance will make a copy of a procedure only if it is called with arguments of different types.  Spec‐
+; ify this option to make copies of procedures even when they are called with arguments of the same type.  This will al‐
+; low them to be in-lined.
+(define *split-even-if-no-widening?*
+  #f
+)
+
+; MISSING
+(define *squeeze?*
+  #f
+)
+ 
+; MISSING
+(define *squish?*
+  #f
+)
+
+; MISSING
+(define *stack-allocation?*
+  #f
+)
+
+; ADD HERE
+(define *tail-call-optimization?*
+  #f
+)
+
+(define *treadmarks?*
+  #f
+)
+
+; *treat-all-symbols-as-external?* controls de use of a single abstract external
+; symbol that is shared among all symbols.
+(define *treat-all-symbols-as-external?*
+  #f
+)
+
+; TODO
+(define *Trotsky?*
+  #f
+)
+
+; MISSING
+(define *type-checks?*
+  #f
+)
+
+; MISSING
+(define *type-if?*
+  #f
+)
+
+; MISSING
+(define *uniqueness?*
+  #f
+)
+
+; -x
+; Includes  the  macros  from  the Xlib and GL library.  Currently, this defines the FOREIGN-FUNCTION and FOREIGN-DEFINE
+; syntax.  This implies -s.
+(define *Xlib-and-GL?*
+  #f
+)

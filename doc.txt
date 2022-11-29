@@ -1,0 +1,10 @@
+There are two official KISS evaluator:
+	* Blackberry
+	* ?
+
+# Blackberry
+
+Blackberry is the official KISS interpreter. It is implemented as a KISS program. For obvious reasons the host language of KISS is Guile. And in some cases Guile's source was modified and placed as one of the official modules.
+
+
+

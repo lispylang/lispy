@@ -1,0 +1,41 @@
+; Copyright (C) 2022 Free Software Foundation, Inc.
+;
+; This program is free software: you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation, either version 3 of the License, or
+; any later version.
+;
+; This program is distributed in the hope that it will be useful, but
+; WITHOUT ANY WARRANTY; without even the implied warranty
+; of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+; General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program. If not, see <https://www.gnu.org/licenses/>. 
+
+; (import
+;   (os
+;   )
+;   (log
+;   )
+; )
+
+(define compile
+  (lambda (pathname)
+      ; initialize architecture
+      ; https://github.com/golang/go/blob/master/src/cmd/compile/main.go
+
+    (unless architecture
+      ; TODO: read https://vijaymarupudi.com/blog/2022-02-13-error-handling-in-guile.html
+      ; (notify
+      ;   port.Stderr
+      ;   "Unknown architecture: ~a"
+      ;   architecture-name
+      ; )
+      ; TODO: find out exit code here.
+      (exit
+          1
+      )
+    )
+  )
+)

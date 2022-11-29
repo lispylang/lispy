@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  guile:
+    build: .
+    command: tail -f /dev/null
+    restart: always
+    volumes:
+      - .:/home/developer/kiss:z
+    environment:
+      - GUILE_AUTO_COMPILE=0
+      - GUILE_LOAD_PATH=.
