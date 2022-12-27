@@ -1,0 +1,3 @@
+### /builtin
+
+In this module you will find the basic operations of the Lispy language that can be used as building blocks for further layers of complexity. 
